@@ -1,4 +1,8 @@
 import pytest
+from django.conf import settings
+from django.urls import reverse
+from datetime import datetime, timedelta 
+from django.utils import timezone
 
 # Импортируем класс клиента.
 from django.test.client import Client
@@ -50,3 +54,35 @@ def comment(author, news):
         news=news,
     )
     return comment
+
+
+@pytest.fixture
+def create_news(db):
+    def _create_news(count: int):
+        today = datetime.today()
+        news_objects = [
+            News(
+                title=f'Новость {i}',
+                text=f'Текст новости {i}',
+                date=today - timedelta(days=i),
+            )
+            for i in range(count)
+        ]
+        return News.objects.bulk_create(news_objects)
+    return _create_news
+
+
+@pytest.fixture
+def create_comments(db, author, news):
+    def _create_comments(count: int):
+        now = timezone.now()
+        for index in range(count):
+            # Создаём объект и записываем его в переменную.
+            comment = Comment.objects.create(
+                news=news, author=author, text=f'Tекст {index}',
+            )
+            # Сразу после создания меняем время создания комментария.
+            comment.created = now + timedelta(days=index)
+            # И сохраняем эти изменения.
+            comment.save()     
+    return _create_comments
