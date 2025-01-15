@@ -70,3 +70,6 @@ def test_authorized_client_has_form(news, author_client):
         assert 'form' in response.context
         # Проверим, что объект формы соответствует нужному классу формы.
         assert isinstance(response.context['form'], CommentForm) 
+
+
+ 

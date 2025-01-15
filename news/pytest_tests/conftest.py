@@ -11,6 +11,7 @@ from django.test.client import Client
 from news.models import News, Comment
 
 
+
 @pytest.fixture
 # Используем встроенную фикстуру для модели пользователей django_user_model.
 def author(django_user_model):
@@ -86,3 +87,10 @@ def create_comments(db, author, news):
             # И сохраняем эти изменения.
             comment.save()     
     return _create_comments
+
+
+@pytest.fixture
+def form_data(author, news):
+    COMMENT_TEXT = 'Текст комментария'
+    form_data = {'text': COMMENT_TEXT} 
+    return form_data
